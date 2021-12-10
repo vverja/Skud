@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="Skud:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/Skud_jar</output-path>
+    <root id="archive" name="Skud.jar">
+      <element id="module-output" name="Skud" />
+    </root>
+  </artifact>
+</component>
