@@ -1,16 +1,15 @@
 package gui;
 
-import javafx.beans.property.LongProperty;
-import javafx.beans.property.SimpleLongProperty;
-import javafx.beans.property.StringProperty;
 import models.EventType;
 import models.TurnstileEvent;
 import models.Users;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Класс для проверки паролей пользователей и эмулирования работы турникета
+ */
 public class Comparator{
     private static final Comparator instance = new Comparator();
     private final Turnstile turnstile = new Turnstile();
@@ -24,22 +23,22 @@ public class Comparator{
     }
 
     public void beginTurnstileWork() throws EmptyDatabaseException{
+        Users.getInstace().readData();
         if (Users.getInstace().getUsers().size()==0)
             throw new EmptyDatabaseException();
         turnstileWork = new Thread(() -> {
                     try {
-                        Users.getInstace().beginTransaction();
-                        Map<LongProperty, StringProperty> users = Users.getInstace().getUsers();
+                        Map<Long, String> users = Users.getInstace().getUsers();
                         while (!turnstileWork.isInterrupted()) {
                             int randomTime = (int) (Math.random() * 10000);
-                            LongProperty key;
+                            Long key;
                             Thread.sleep(randomTime);
                             if(randomTime%5!=0){
-                                List<LongProperty> keyList = new ArrayList<>(users.keySet());
+                                List<Long> keyList = Users.getInstace().getObservableList();
                                 int index = (int)(Math.random() * users.size());
                                 key = keyList.get(index);
                             }else{
-                                key = new SimpleLongProperty((long) (Math.random() * 100000000));
+                                key = (long) (Math.random() * 100000000);
                             }
                             checkUser(key);
 
@@ -57,16 +56,18 @@ public class Comparator{
             turnstileWork.interrupt();
     }
 
-    public void checkUser (LongProperty password){
-        Map<LongProperty, StringProperty> users = Users.getInstace().getUsers();
+    public boolean checkUser (Long password){
+        Map<Long, String> users = Users.getInstace().getUsers();
         if(users.containsKey(password)){
-            StringProperty username = users.get(password);
-            EventType eventType = getEventType(username.getValue());
-            Main.getTurnstileEvents().add(new TurnstileEvent(username.getValue(), eventType));
+            String username = users.get(password);
+            EventType eventType = getEventType(username);
+            Main.getTurnstileEvents().add(new TurnstileEvent(username, eventType));
             turnstile.open();
+            return true;
         }else{
             Main.getTurnstileEvents().add(new TurnstileEvent("Невідома людина", EventType.BLOCKED));
             turnstile.block();
+            return false;
         }
     }
 
@@ -77,4 +78,5 @@ public class Comparator{
         else
             return EventType.OUT;
     }
+
 }

@@ -1,5 +1,8 @@
 package gui;
 
+/**
+ * Класс имитирует работу турникета
+ */
 public class Turnstile {
     void open(){
         System.out.println("Турникет відкрито");

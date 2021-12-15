@@ -10,17 +10,13 @@
    <children>
       <HBox alignment="CENTER" layoutX="293.0" layoutY="370.0" spacing="5.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="5.0">
          <children>
-            <Button fx:id="buttonAdd" mnemonicParsing="false" prefWidth="140.0" text="Додати користувача"
-                                                                                    onAction="#addButtonHandle"/>
-            <Button fx:id="buttonDelete" mnemonicParsing="false" prefWidth="140.0" text="Видалити користувача"
-                                                                                    onAction="#deleteButtonHandle"/>
-            <Button fx:id="buttonPasswordChange" mnemonicParsing="false" prefWidth="140.0" text="Зміна паролю"
-                                                                                        onAction="#editButtonHandle"/>
-            <Button fx:id="buttonExit" minWidth="50.0" mnemonicParsing="false" prefWidth="140.0" text="Вихід"
-                                                                                        onAction="#buttonExitHandle"/>
+            <Button fx:id="buttonAdd" mnemonicParsing="false" onAction="#addButtonHandle" prefWidth="140.0" text="Додати користувача" />
+            <Button fx:id="buttonDelete" mnemonicParsing="false" onAction="#deleteButtonHandle" prefWidth="140.0" text="Видалити користувача" />
+            <Button fx:id="buttonPasswordChange" mnemonicParsing="false" onAction="#editButtonHandle" prefWidth="140.0" text="Зміна паролю" />
+            <Button fx:id="buttonExit" minWidth="50.0" mnemonicParsing="false" onAction="#buttonExitHandle" prefWidth="140.0" text="Вихід" />
          </children>
       </HBox>
-      <TableView fx:id="userTable" layoutX="-471.0" layoutY="18.0" prefHeight="366.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0">
+      <TableView fx:id="userTable" layoutX="-471.0" layoutY="18.0" prefHeight="366.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="35.0">
         <columns>
           <TableColumn fx:id="nameColumn" prefWidth="478.0" text="ПІБ користуача" />
           <TableColumn fx:id="passColumn" prefWidth="120.0" text="Пароль" />

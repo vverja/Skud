@@ -1,79 +1,71 @@
 package models;
 
-import javafx.beans.property.LongProperty;
-import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
+import javafx.collections.MapChangeListener;
 import javafx.collections.ObservableList;
+import javafx.collections.ObservableMap;
 import models.storage.FileStorage;
 
-import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Класс хранит в себе данные о пользователях и паролях, а так же взаимодействует с утилитарным классом
+ * Filestorage для записи и чтения данных.
+ * Поле users содежит HashMap где ключем является пароль, а значением имя пользователя
+ * Поле keys содержит список ключей (паролей) для взаимодействия с таблицей в форме менеджера пользователей
+ * Класс создан по шаблону синглтон, т.к. в программе может существовать только один список пользователей
+ */
 public class Users {
-    private Map<LongProperty, StringProperty> users = new HashMap<>();
-    private ObservableList<Map.Entry<LongProperty, StringProperty>> observableList
-                                                    = FXCollections.observableArrayList();
+
+    private final ObservableMap<Long, String> users = FXCollections.observableHashMap();
+    private final ObservableList<Long> keys = FXCollections.observableArrayList();
 
     private static final Users instance = new Users();
 
-    private boolean transactionStatus = false;
-    private final String TRANSACTION_ERROR_MESSAGE = "Помилка! Транакція запису данних не відкрита!";
 
     public static Users getInstace() {
         return instance;
     }
 
     private Users(){
-
+        users.addListener((MapChangeListener.Change<? extends Long, ? extends String> change)->{
+            if (change.wasRemoved())
+                keys.remove(change.getKey());
+            if(change.wasAdded())
+                keys.add(change.getKey());
+        });
     }
 
-    public void beginTransaction(){
+    public void readData(){
         readDataFromFileStorage();
-        transactionStatus = true;
     }
 
-    public void endTransaction(){
+    public void writeData(){
         writeDataToFileStorage();
-        transactionStatus = false;
     }
 
-    public Map<LongProperty, StringProperty> getUsers() {
+    public ObservableMap<Long, String> getUsers() {
         return users;
     }
-    public ObservableList<Map.Entry<LongProperty, StringProperty>> getObservableList(){return observableList;}
+    public ObservableList<Long> getObservableList(){return keys;}
 
 
-    public void addUser(LongProperty id, StringProperty name){
-        if (transactionStatus) {
-            users.put(id, name);
-            observableList.add(Map.entry(id,name));
-        }
-        else
-            System.out.println(TRANSACTION_ERROR_MESSAGE);
-
+    public void addUser(Long id, String name){
+        users.put(id, name);
     }
 
-    public void deleteUser(LongProperty id){
-        if (transactionStatus) {
+    public void deleteUser(Long id){
             users.remove(id);
-            observableList.stream().filter(e->e.getKey().equals(id))
-                    .findFirst().ifPresent(p->observableList.remove(p));
-        }
-        else
-            System.out.println(TRANSACTION_ERROR_MESSAGE);
     }
 
-    public void changeUser(LongProperty oldId, LongProperty newId, StringProperty name){
-        if (transactionStatus){
-            deleteUser(oldId);
-            addUser(newId, name);
-        } else
-            System.out.println(TRANSACTION_ERROR_MESSAGE);
+    public void changeUser(Long oldId, Long newId, String name){
+        deleteUser(oldId);
+        addUser(newId, name);
     }
 
     private void readDataFromFileStorage(){
-        users = FileStorage.readAllData();
-        observableList = FXCollections.observableArrayList(users.entrySet());
+        Map<Long, String> data =  FileStorage.readAllData();
+        data.forEach((key, value)-> users.put(key, value));
     }
 
     private void writeDataToFileStorage(){

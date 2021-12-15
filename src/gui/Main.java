@@ -18,12 +18,18 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import models.TurnstileEvent;
+import models.Users;
 
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Класс с которого начинается работа с графическим интерфейсом
+ * Здесь осуществляется выбор профиля работы и авторизация администратора,
+ * после чего запускается окно событий
+ */
 
 public class Main extends Application {
     private boolean admin = false;
@@ -36,6 +42,7 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception{
+        Users.getInstace().readData();
         showProfileSelectorDialog();
         showMain();
      }

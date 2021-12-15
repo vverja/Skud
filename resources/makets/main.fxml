@@ -17,8 +17,9 @@
       </TableView>
       <HBox alignment="BOTTOM_RIGHT" spacing="5.0" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="5.0">
          <children>
-            <Button fx:id="managerButton" mnemonicParsing="false" text="Менеджер користувачів" onAction="#managerButtonHandle"/>
-            <Button fx:id="turnstileTurnOnOffButton" mnemonicParsing="false" text="Підключити\відключити турнікет" onAction="#turnstileTurnOnOffButtonHandle"/>
+            <Button fx:id="managerButton" mnemonicParsing="false" onAction="#managerButtonHandle" text="Менеджер користувачів" />
+            <Button fx:id="passCheckButton" mnemonicParsing="false" text="Перевірка паролю" onAction="#passCheckButtonHandle"/>
+            <Button fx:id="turnstileTurnOnOffButton" mnemonicParsing="false" onAction="#turnstileTurnOnOffButtonHandle" text="Підключити\відключити емулятор турнікету" />
             <Button fx:id="exitButton" mnemonicParsing="false" text="Закрити" />
          </children>
       </HBox>

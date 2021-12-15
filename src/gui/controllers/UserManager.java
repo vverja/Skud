@@ -1,7 +1,6 @@
 package gui.controllers;
 
-import javafx.beans.property.LongProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.binding.Bindings;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -15,12 +14,14 @@ import javafx.stage.Stage;
 import models.Users;
 
 import java.io.IOException;
-import java.util.Map;
 
+/**
+ * Класс обеспечивающий работу окна менеджера пользователей
+ * Выводит окно с таблицей пользователей, кнопки добавления, удаления и редактирования пользователей
+ */
 public class UserManager {
     private final Users users = Users.getInstace();
     private Stage userManagerStage;
-    private ObservableList<Map.Entry<LongProperty, StringProperty>> usersList;
 
     @FXML
     public Button buttonAdd;
@@ -31,23 +32,26 @@ public class UserManager {
     @FXML
     public Button buttonExit;
     @FXML
-    public TableView<Map.Entry<LongProperty, StringProperty>> userTable;
+    public TableView<Long> userTable;
     @FXML
-    public TableColumn<Map.Entry<LongProperty, StringProperty>, String> nameColumn;
+    public TableColumn<Long, String> nameColumn;
     @FXML
-    public TableColumn<Map.Entry<LongProperty, StringProperty>, Long> passColumn;
+    public TableColumn<Long, String> passColumn;
 
     @FXML
     private void initialize(){
-        Users.getInstace().beginTransaction();
-        nameColumn.setCellValueFactory(cellData->cellData.getValue().getValue());
-        passColumn.setCellValueFactory(cellData->cellData.getValue().getKey().asObject());
-        userTable.setItems(users.getObservableList());
+        ObservableList<Long> keys = Users.getInstace().getObservableList();
+        userTable.setItems(keys);
+
+        nameColumn.setCellValueFactory(cellData->Bindings.valueAt(users.getUsers(),cellData.getValue()));
+        passColumn.setCellValueFactory(cellData->Bindings.createStringBinding(()->cellData.getValue().toString()));
+        //userTable.setItems(users.getObservableList());
     }
 
     @FXML
     public void deleteButtonHandle(){
-        users.deleteUser(userTable.getSelectionModel().getSelectedItem().getKey());
+        users.deleteUser(userTable.getSelectionModel().getSelectedItem());
+        Users.getInstace().writeData();
     }
 
     @FXML
@@ -63,10 +67,10 @@ public class UserManager {
     @FXML
     private void buttonExitHandle(){
         userManagerStage.close();
-        Users.getInstace().endTransaction();
+        Users.getInstace().writeData();
     }
 
-    private void showEditDialog(Map.Entry<LongProperty, StringProperty> user){
+    private void showEditDialog(Long key){
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(getClass().getResource("/makets/userEdit.fxml"));
         try {
@@ -79,11 +83,11 @@ public class UserManager {
 
             UserEdit controller = loader.getController();
             controller.setUserEditStage(stage);
-            controller.setUser(user);
-
+            controller.setUser(key);
+            controller.usernameFieldAvailability(key==null);
             Scene scene = new Scene(pane);
             stage.setScene(scene);
-            stage.setOnCloseRequest(e->Users.getInstace().endTransaction());
+            stage.setOnCloseRequest(e->Users.getInstace().writeData());
 
             stage.showAndWait();
         } catch (IOException e) {

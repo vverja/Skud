@@ -6,6 +6,10 @@ import javafx.beans.property.StringProperty;
 
 import java.time.LocalDateTime;
 
+/**
+ * Класс содержит список событий происходивших на турникете, в последствии из него получаются данные для
+ * окна событий.
+ */
 public class TurnstileEvent {
     private final StringProperty username;
     private final LocalDateTime dateTime;
